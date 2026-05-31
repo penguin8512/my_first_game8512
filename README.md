@@ -1,1 +1,1 @@
-# my_frist_game
+# my_first_game
