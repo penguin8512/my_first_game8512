@@ -20,6 +20,9 @@ bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
 font = pygame.font.Font("assets/fonts/msjh.ttf", 30)
 big_font = pygame.font.Font(None, 60)
 
+hole_img = pygame.image.load("assets/images/mice8.png").convert_alpha()
+hole_img = pygame.transform.scale(hole_img, (140, 80))
+
 positions = [
     (150, 180), (350, 180), (550, 180), (750, 180),
     (150, 420), (350, 420), (550, 420), (750, 420),
@@ -28,7 +31,8 @@ positions = [
 assets = {
     "mole_frames": mole_frames,
     "positions": positions,
-    "bg": bg
+    "bg": bg,
+    "hole_img": hole_img
 }
 
 game = Game(assets)

@@ -2,10 +2,11 @@ import random
 import pygame
 
 class Mole:
-    def __init__(self, words, positions, frames):
+    def __init__(self, words, positions, frames,hole_img):
         self.words = words
         self.positions = positions
         self.frames = frames
+        self.hole_img=hole_img
 
         self.current_word = None
         self.current_pos = None
@@ -24,6 +25,11 @@ class Mole:
         self.frame_index += 0.2
         if self.frame_index >= len(self.frames):
             self.frame_index = len(self.frames) - 1
+            
+    def draw_holes(self, screen):
+        for pos in self.positions:
+            x, y = pos
+            screen.blit(self.hole_img, (x - 60, y - 30))
 
     def draw(self, screen, font):
         x, y = self.current_pos

@@ -89,7 +89,8 @@ class Game:
         self.mole = Mole(
             self.words,
             self.assets["positions"],
-            self.assets["mole_frames"]
+            self.assets["mole_frames"],
+            self.assets["hole_img"]
         )
 
         self.state = "game"
@@ -107,8 +108,12 @@ class Game:
     def draw_game(self, screen, font):
         screen.blit(self.assets["bg"], (0, 0))
 
-        self.mole.draw(screen, font)
+        # ⭐ 先畫洞（背景層）
+        self.mole.draw_holes(screen)
 
+        # ⭐ 再畫地鼠（前景層）
+        self.mole.draw(screen, font)
+        
         screen.blit(font.render(self.user_text, True, WHITE), (300, 600))
         screen.blit(font.render(f"score: {self.score}", True, WHITE), (50, 50))
         screen.blit(font.render(f"life: {self.lives}", True, RED), (50, 100))
