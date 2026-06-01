@@ -83,7 +83,7 @@ mole_positions = [
 
 current_pos = random.choice(mole_positions)
 
-MOLE_DURATION = 3000
+MOLE_DURATION = 7000
 stage_start_time = pygame.time.get_ticks()
 mole_timer = pygame.time.get_ticks()
 mole_index = 0
@@ -112,11 +112,13 @@ level_buttons = [
 # 工具
 # =========================
 def new_mole():
-    global current_word, current_pos, mole_index
+    global current_word,current_pos,mole_index,mole_timer
 
-    current_word = random.choice(words)
-    current_pos = random.choice(mole_positions)
-    mole_index = 0
+    current_word=random.choice(words)
+    current_pos=random.choice(mole_positions)
+
+    mole_index=0
+    mole_timer=pygame.time.get_ticks()
 
 
 def draw_mole():
@@ -211,8 +213,15 @@ while running:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if menu_buttons["start"].collidepoint(event.pos):
-                    game_state = "level"
 
+                    score = 0
+                    stage_index = 0
+                    user_text = ""
+
+                    stage_start_time = pygame.time.get_ticks()
+                    mole_timer = pygame.time.get_ticks()
+
+                    game_state = "level"
                 if menu_buttons["how"].collidepoint(event.pos):
                     game_state = "how"
 
@@ -236,11 +245,16 @@ while running:
                     if btn.collidepoint(event.pos):
 
                         level = i + 1
+
                         stage_index = 0
                         score = 0
                         user_text = ""
 
-                        words = load_words(level, stages[stage_index])
+                        stage_start_time = pygame.time.get_ticks()
+                        mole_timer = pygame.time.get_ticks()
+
+                        words = load_words(level, stages[0])
+
                         new_mole()
 
                         game_state = "game"
@@ -278,20 +292,44 @@ while running:
         elapsed = (pygame.time.get_ticks() - stage_start_time) / 1000
         current_time = pygame.time.get_ticks()
 
-        
-        # 時間到 → 下一關
+        # 地鼠3秒換位置
+        if current_time - mole_timer >= MOLE_DURATION:
+
+            new_mole()
+        # =====================
+        # 時間到
+        # =====================
         if elapsed >= 30:
-            stage_index += 1
 
-            if stage_index < 3:
-                words = load_words(level, stages[stage_index])
+            # 分數達標
+            if score >= TARGET_SCORE:
 
-                stage_start_time = pygame.time.get_ticks()
-                mole_timer = pygame.time.get_ticks()
+                clear_sound.play()
 
-                new_mole()
+                stage_index += 1
+
+                # 第一、二關過關
+                if stage_index < 3:
+
+                    game_state = "clear"
+                    clear_timer = pygame.time.get_ticks()
+
+                # 第三關過關
+                else:
+
+                    spawn_particles()
+                    game_state = "firework"
+                    clear_timer = pygame.time.get_ticks()
+
+            # 分數不足
             else:
-                start_clear()
+
+                game_state = "over"
+
+
+          
+
+        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -333,7 +371,90 @@ while running:
             font.render(f"Time:{int(30 - elapsed)}", True, (255,255,0)),
             (820, 20)
         )
-       
+        
+    # ================= GAME OVER =================
+    elif game_state == "over":
+
+        screen.fill((0,0,0))
+
+        text = big_font.render(
+            "GAME OVER",
+            True,
+            (255,0,0)
+        )
+
+        screen.blit(text,(300,250))
+
+        score_text = font.render(
+            f"Score : {score}/{TARGET_SCORE}",
+            True,
+            (255,255,255)
+        )
+
+        screen.blit(score_text,(400,350))
+
+        hint = font.render(
+            "Press SPACE to Menu",
+            True,
+            (255,255,255)
+        )
+
+        screen.blit(hint,(350,450))
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_SPACE:
+
+                    score = 0
+                    stage_index = 0
+                    user_text = ""
+
+                    stage_start_time = pygame.time.get_ticks()
+                    mole_timer = pygame.time.get_ticks()
+
+                    game_state = "menu"
+
+# ================= FIREWORK =================
+    elif game_state == "firework":
+
+        screen.fill((0,0,0))
+
+        update_particles()
+        draw_particles()
+
+        title = big_font.render(
+            "LEVEL COMPLETE!",
+            True,
+            (255,255,0)
+        )
+
+        screen.blit(title,(220,150))
+
+        if pygame.time.get_ticks() - clear_timer > 3000:
+
+            level += 1
+
+            if level > 6:
+
+                game_state = "menu"
+
+            else:
+
+                stage_index = 0
+                score = 0
+
+                words = load_words(level,"first")
+
+                stage_start_time = pygame.time.get_ticks()
+
+                new_mole()
+
+                game_state = "game"
 
     # ================= CLEAR =================
     elif game_state == "clear":
@@ -385,16 +506,18 @@ while running:
 
         if elapsed_clear > 2000:
 
-            level += 1
-            stage_index = 0
             score = 0
 
-            if level > 6:
-                game_state = "menu"
-            else:
-                words = load_words(level, stages[stage_index])
-                new_mole()
-                game_state = "game"
+            words = load_words(
+                level,
+                stages[stage_index]
+            )
+
+            stage_start_time = pygame.time.get_ticks()
+
+            new_mole()
+
+            game_state = "game"
 
     pygame.display.flip()
 
