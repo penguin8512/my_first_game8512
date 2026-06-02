@@ -97,9 +97,11 @@ particles = []
 # UI
 # =========================
 menu_buttons = {
-    "start": pygame.Rect(350, 250, 300, 70),
-    "how": pygame.Rect(350, 350, 300, 70),
-    "exit": pygame.Rect(350, 450, 300, 70)
+    "開始遊戲": pygame.Rect(350, 250, 300, 60),
+    "遊戲說明": pygame.Rect(350, 350, 300, 60),
+    "結束遊戲": pygame.Rect(350, 450, 300, 60)
+    # pygame.Rect(x, y, width, height)
+    # pygame.Rect(左上角 X 座標（水平位置）, 左上角 Y 座標（垂直位置）, 寬度（橫向大小）, 高度（縱向大小）)
 }
 
 level_buttons = [
@@ -204,15 +206,14 @@ while running:
 
         for name, btn in menu_buttons.items():
             pygame.draw.rect(screen, (0, 200, 0), btn)
-            screen.blit(font.render(name.upper(), True, (0, 0, 0)),
-                        (btn.x + 110, btn.y + 20))
+            screen.blit(font.render(name.upper(), True, (0, 0, 0)),(btn.x + 85, btn.y + 10)) # 主選單按鈕的文字設定
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if menu_buttons["start"].collidepoint(event.pos):
+                if menu_buttons["開始遊戲"].collidepoint(event.pos):
 
                     score = 0
                     stage_index = 0
@@ -222,10 +223,10 @@ while running:
                     mole_timer = pygame.time.get_ticks()
 
                     game_state = "level"
-                if menu_buttons["how"].collidepoint(event.pos):
+                if menu_buttons["遊戲說明"].collidepoint(event.pos):
                     game_state = "how"
 
-                if menu_buttons["exit"].collidepoint(event.pos):
+                if menu_buttons["結束遊戲"].collidepoint(event.pos):
                     running = False
 
     # ================= LEVEL SELECT =================
@@ -269,21 +270,24 @@ while running:
         screen.fill((30, 30, 30))
 
         texts = [
-            "HOW TO PLAY",
-            "Type the word above mole",
-            "Press ENTER",
-            "Clear 3 stages per level",
-            "Complete 6 levels"
+            "遊戲說明",
+            "這是一個打地鼠遊戲",
+            "當地鼠出現時，打字框會顯示一個英文單字",
+            "你需要在地鼠消失前，正確輸入單字並按下ENTER",
+            "每關有三個階段，每個階段需要達到一定分數才能過關",
+            "總共有六關，祝各位好運~",
+            "",
+            "按下ENTER返回選單"
         ]
 
         for i, t in enumerate(texts):
-            screen.blit(font.render(t, True, (255, 255, 255)), (250, 150 + i * 50))
+            screen.blit(font.render(t, True, (255, 255, 255)), (150, 150 + i * 50))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_RETURN: # 按下ENTER返回選單
                     game_state = "menu"
 
     # ================= GAME =================
