@@ -2,6 +2,8 @@ import pygame
 import random
 import csv
 
+
+
 pygame.init()
 pygame.mixer.init()
 
@@ -67,9 +69,13 @@ game_state = "menu"
 level = 1
 stages = ["first", "second", "third"]
 stage_index = 0
-
+start_time = pygame.time.get_ticks()
+typed_chars = 0
+correct_words = 0
+wrong_words = 0
 score = 0
-TARGET_SCORE = 5
+#過關分數
+TARGET_SCORE = 1
 
 user_text = ""
 
@@ -83,6 +89,7 @@ mole_positions = [
 
 current_pos = random.choice(mole_positions)
 
+#地鼠消失時間
 MOLE_DURATION = 7000
 stage_start_time = pygame.time.get_ticks()
 mole_timer = pygame.time.get_ticks()
@@ -132,7 +139,7 @@ def draw_mole():
     text = font.render(current_word["word"], True, (255, 255, 255))
 
     text_rect = text.get_rect(
-        center=(x, y - 110)
+        center=(x, y - 60)
     )
 
     screen.blit(text, text_rect)
@@ -219,6 +226,11 @@ while running:
                     stage_index = 0
                     user_text = ""
 
+                    start_time = pygame.time.get_ticks()
+                    typed_chars = 0
+                    correct_words = 0
+                    wrong_words = 0
+
                     stage_start_time = pygame.time.get_ticks()
                     mole_timer = pygame.time.get_ticks()
 
@@ -231,7 +243,7 @@ while running:
 
     # ================= LEVEL SELECT =================
     elif game_state == "level":
-
+        
         screen.fill((0, 0, 0))
 
         title = big_font.render("SELECT LEVEL", True, (255, 255, 255))
@@ -250,6 +262,11 @@ while running:
                         stage_index = 0
                         score = 0
                         user_text = ""
+
+                        start_time = pygame.time.get_ticks()
+                        typed_chars = 0
+                        correct_words = 0
+                        wrong_words = 0
 
                         stage_start_time = pygame.time.get_ticks()
                         mole_timer = pygame.time.get_ticks()
@@ -296,25 +313,32 @@ while running:
         elapsed = (pygame.time.get_ticks() - stage_start_time) / 1000
         current_time = pygame.time.get_ticks()
 
-        # 地鼠3秒換位置
+        # 地鼠5秒換位置
         if current_time - mole_timer >= MOLE_DURATION:
 
             new_mole()
         # =====================
         # 時間到
         # =====================
-        if elapsed >= 30:
+        if elapsed >= 10:#一關時間(s)
+
+            total_time = (pygame.time.get_ticks() - start_time) / 1000
+
+            cpm = typed_chars / max(total_time, 1)
+            wpm = (typed_chars / 5) / max(total_time / 60, 1)
+            accuracy = (correct_words / max(1, correct_words + wrong_words)) * 100
 
             # 分數達標
             if score >= TARGET_SCORE:
 
                 clear_sound.play()
 
-                stage_index += 1
+                
 
+                
                 # 第一、二關過關
-                if stage_index < 3:
-
+                if stage_index < 2:
+                    stage_index += 1
                     game_state = "clear"
                     clear_timer = pygame.time.get_ticks()
 
@@ -322,7 +346,7 @@ while running:
                 else:
 
                     spawn_particles()
-                    game_state = "firework"
+                    game_state = "result"
                     clear_timer = pygame.time.get_ticks()
 
             # 分數不足
@@ -351,8 +375,12 @@ while running:
 
                     if user_text.lower() == current_word["word"].lower():
                         score += 1
+                        correct_words += 1
                         hit_sound.play()
+
+                        typed_chars += len(current_word["word"])
                     else:
+                        wrong_words += 1
                         wrong_sound.play()
 
                     user_text = ""
@@ -421,8 +449,51 @@ while running:
                     stage_start_time = pygame.time.get_ticks()
                     mole_timer = pygame.time.get_ticks()
 
+
                     game_state = "menu"
 
+
+# ================= result =================
+    elif game_state == "result":
+
+        screen.fill((0, 0, 0))
+
+        # GAME OVER
+        over_text = big_font.render("GAME OVER", True, (255, 80, 80))
+        screen.blit(over_text, (350, 80))
+
+        # RESULT
+        result_title = big_font.render("RESULT", True, (255, 255, 0))
+        screen.blit(result_title, (390, 160))
+
+        # 計算（保險重算一次）
+        total_time = max((pygame.time.get_ticks() - start_time) / 1000, 1)
+
+        cpm = typed_chars / total_time
+        wpm = (typed_chars / 5) / (total_time / 60)
+        accuracy = (correct_words / max(1, correct_words + wrong_words)) * 100
+
+        # 顯示數據
+        wpm_text = font.render(f"WPM: {wpm:.1f}", True, (255, 255, 255))
+        cpm_text = font.render(f"CPM: {cpm:.1f}", True, (255, 255, 255))
+        acc_text = font.render(f"Accuracy: {accuracy:.1f}%", True, (255, 255, 255))
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+
+        screen.blit(wpm_text, (400, 280))
+        screen.blit(cpm_text, (400, 330))
+        screen.blit(acc_text, (400, 380))
+        screen.blit(score_text, (400, 430))
+
+        hint = font.render("Press SPACE to return menu", True, (180, 180, 180))
+        screen.blit(hint, (330, 520))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    game_state = "menu"
 # ================= FIREWORK =================
     elif game_state == "firework":
 
@@ -512,10 +583,8 @@ while running:
 
             score = 0
 
-            words = load_words(
-                level,
-                stages[stage_index]
-            )
+            stage_name = stages[min(stage_index, len(stages)-1)]
+            words = load_words(level, stage_name)
 
             stage_start_time = pygame.time.get_ticks()
 
