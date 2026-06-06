@@ -1,13 +1,15 @@
 import pygame
 import random
 import csv
+import sys
+
 
 pygame.init()
 pygame.mixer.init()
 
 WIDTH, HEIGHT = 1000, 700
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Typing Whack-a-Mole")
+pygame.display.set_caption("打字地鼠大作戰")
 
 clock = pygame.time.Clock()
 
@@ -83,8 +85,8 @@ try:
     hit_sound = pygame.mixer.Sound("music/hit.wav")
     wrong_sound = pygame.mixer.Sound("music/wrong.wav")
     clear_sound = pygame.mixer.Sound("music/clear.wav")
-    hit_sound.set_volume(0.5)
-    wrong_sound.set_volume(0.5)
+    hit_sound.set_volume(1)
+    wrong_sound.set_volume(1)
     clear_sound.set_volume(0.7)
     pygame.mixer.music.load("music/bgm.wav")
     pygame.mixer.music.set_volume(0.3)
@@ -95,7 +97,11 @@ except:
 # =========================
 # 狀態
 # =========================
-game_state = "menu"
+# 🌟 將初始狀態改為 "chatbot"，讓遊戲一打開先進入聊天流程
+game_state = "chatbot" 
+chatbot_step = 0        # 🌟 控制機器人對話走到哪一步
+player_name = "玩家"     # 🌟 用來儲存玩家輸入的名字
+
 
 level = 1
 stages = ["first", "second", "third"]
@@ -108,6 +114,8 @@ score = 0
 total_score = 0
 TARGET_SCORE = 1
 
+MAX_NAME_LEN = 12
+input_val = ""  
 user_text = ""
 words = [{"word": "cat"}]
 current_word = random.choice(words)
@@ -260,6 +268,55 @@ def calculate_stats():
     
     total_words = correct_words + wrong_words
     final_accuracy = (correct_words / max(1, total_words)) * 100
+# 🌟 新增：繪製機器人外觀與對話框的共用函式
+def draw_robot_ui(bot_text, show_input=False, input_val=""):
+    screen.fill((40, 45, 50)) # 深色科技感背景
+    
+    # 1. 機器人圖片
+    # 繪製引導機器人（圖片版）
+    robot_img = pygame.image.load("images/robot.png").convert_alpha()
+    robot_img = pygame.transform.scale(robot_img, (150, 150))
+    screen.blit(robot_img, (50, 150))
+    # 名字標籤
+    name_tag = font.render("小幫手喵喵", True, (0, 255, 200))
+    screen.blit(name_tag, (50, 300))
+    
+    # 2. 繪製對話氣泡框
+    bubble_rect = pygame.Rect(220, 150, 720, 250)
+    pygame.draw.rect(screen, (30, 30, 35), bubble_rect, border_radius=15)
+    pygame.draw.rect(screen, (0, 180, 255), bubble_rect, 3, border_radius=15)
+    
+    # 渲染對話文字 (支援多行 \n 換行)
+    lines = bot_text.split('\n')
+    for idx, line in enumerate(lines):
+        rendered_line = font.render(line, True, (255, 255, 255))
+        screen.blit(rendered_line, (250, 180 + idx * 40))
+        
+    # 3. 如果需要玩家輸入（填名字階段）
+    if show_input:
+        box_width = 400
+        box_height = 50
+        box_x = (WIDTH - box_width) // 2
+        box_y = 450
+        box_rect = pygame.Rect(box_x, box_y, box_width, box_height)
+        
+        pygame.draw.rect(screen, (20, 20, 25), box_rect)
+        box_color = (0, 220, 100) if input_val else (150, 150, 150)
+        pygame.draw.rect(screen, box_color, box_rect, 3, border_radius=8)
+        
+        text_surf = font.render(input_val, True, (255, 255, 255))
+        screen.blit(text_surf, (box_rect.x + 15, box_rect.centery - text_surf.get_height() // 2))
+        
+        hint = font.render("請輸入您的英文名字，完成後請按 ENTER", True, (150, 150, 150))
+        screen.blit(hint, (WIDTH//2 - hint.get_width()//2, 520))
+        counter = font.render(f"{len(input_val)}/12", True, (150,150,150))
+        screen.blit(counter, (box_rect.right - 60, box_rect.y - 40))
+    else:
+        # 提示按 Enter 繼續
+        hint = font.render("[ 按 ENTER 繼續 ]", True, (0, 255, 200))
+        screen.blit(hint, (WIDTH//2 - hint.get_width()//2, 550))
+
+
 
 new_mole()
 
@@ -282,11 +339,53 @@ while running:
         if anim.is_finished:
             active_hit_animations.remove(anim)
 
+
+    # ================= 🌟 新增：CHATBOT 機器人互動狀態 =================
+    if game_state == "chatbot":
+        if chatbot_step == 0:
+            draw_robot_ui("嗨！歡迎來到打字地鼠世界！\n我是你的引導小幫手。\n在開始之前，能告訴我你的名字嗎？")
+        elif chatbot_step == 1:
+            draw_robot_ui("請在下方輸入框寫下名字吧：", show_input=True, input_val=user_text)
+        elif chatbot_step == 2:
+            draw_robot_ui(f"{player_name}，你好呀！很高興認識你！\n接下來，請讓我為你說明一下遊戲規則。\n準備好了就按 Enter 吧！")
+        elif chatbot_step == 3:
+            draw_robot_ui("【 遊戲規則說明 】\n1. 地鼠出現時，牠頭上會顯示一個英文單字。\n2. 在時間內正確打出單字並按下 ENTER 敲擊！\n3. 每關有3個小階段，必須達到指定分數才能過關。\n祝你好運！點擊 Enter 進入主畫面！")
+#============================================
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if chatbot_step == 1:
+                    # 名字輸入階段
+                    if event.key == pygame.K_BACKSPACE:
+                        user_text = user_text[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        if user_text.strip() != "":
+                            player_name = user_text.strip()
+                        user_text = "" # 清空，留給後面遊戲打字用
+                        chatbot_step = 2
+                    else:
+                        # 🌟 修正：只有當按下的是英文字母或空格時才接收
+                        if event.unicode.isalpha() or event.unicode == " ":
+                            # 🌟 修正：限制名字最長12 個字（直接寫數字，免去未定義變數的崩潰）
+                            if len( user_text ) < 12:
+                                user_text += event.unicode # 🌟 修正：將字串加到正確的user_text 變數中
+  
+#============================================
+                else:
+                    # 其他步驟點 Enter 進入下一步
+                    if event.key == pygame.K_RETURN:
+                        chatbot_step += 1
+                        if chatbot_step > 3:
+                            game_state = "menu" # 對話結束，跳轉至主畫面
+
+
     # ================= MENU =================
-    if game_state == "menu":
+    elif game_state == "menu":
         screen.fill((20, 20, 20))
-        title = big_font.render("TYPING WHACK-A-MOLE", True, (255, 255, 255))
-        screen.blit(title, (180, 120))
+        big_font = pygame.font.Font("fonts/msjh.ttf", 60)
+        title = big_font.render("打字地鼠大作戰", True, (255, 255, 255))
+        screen.blit(title, (WIDTH//2 - title.get_width()//2, 120))
 
         for name, btn in menu_buttons.items():
             pygame.draw.rect(screen, (0, 200, 0), btn)
@@ -367,7 +466,6 @@ while running:
     # ================= GAME =================
     elif game_state == "game":
         screen.blit(bg_img, (0, 0))
-        
         # 只有在真正的遊戲關卡狀態下，才累加有效打字時間
         total_game_time += dt
 
@@ -476,74 +574,120 @@ while running:
         screen.blit(text_surface, text_rect)
         # ==========================================
         # screen.blit(font.render(user_text, True, (255, 255, 255)), (270, 590))
-        screen.blit(font.render(f"L{level}-{stages[stage_index]}", True, (255,255,255)), (50, 20))
-        screen.blit(font.render(f"Score:{score}", True, (255,255,255)), (50, 60))
-        screen.blit(font.render(f"Time:{max(0, int(10 - elapsed))}", True, (255,255,0)), (820, 20)) # 修正原本顯示30秒的文字Bug
+        screen.blit(font.render(f"Level {level}-{stage_index+1}", True, (255,255,255)), (50, 20))
+        screen.blit(font.render(f"得分：{score}", True, (255,255,255)), (50, 60))
+        screen.blit(font.render(f"剩餘時間：{max(0, int(10 - elapsed))}秒", True, (255,255,0)), (750, 20)) # 顯示時間(倒數)
         
     # ================= GAME OVER =================
     elif game_state == "over":
-        screen.fill((0,0,0))
+        screen.blit(bg_img, (0, 0)) 
+        # 引導機器人
+        robot_img = pygame.image.load("images/robot_sad.png").convert_alpha()
+        robot_img = pygame.transform.scale(robot_img, (150, 150))
+        screen.blit(robot_img, (100, 150))
+        # 名字標籤
+        name_tag = font.render("小幫手喵喵", True, (0, 235, 200))
+        screen.blit(name_tag, (100, 320))
         
-        text = big_font.render("GAME OVER", True, (255,0,0))
-        screen.blit(text,(300,200))
-
-        result_title = big_font.render("RESULT", True, (255,255,0))
-        screen.blit(result_title,(420,260))
 
         # 🌟 這裡直接讀取剛剛算好的 final_wpm 和 final_cpm，不會再隨著時間遞減了！
-        stats1 = font.render(f"WPM: {final_wpm:.1f}", True, (255,255,255))
-        stats2 = font.render(f"CPM: {final_cpm:.1f}", True, (255,255,255))
-        stats3 = font.render(f"Accuracy: {final_accuracy:.1f}%", True, (255,255,255))
-        stats4 = font.render(f"Total Score: {total_score}/{TARGET_SCORE}", True, (255,255,255))
+        stats1 = font.render(f"每分鐘所打的單字數(WPM): {final_wpm:.1f}", True, (255,255,255))
+        stats2 = font.render(f"每分鐘所打的字元數(CPM): {final_cpm:.1f}", True, (255,255,255))
+        stats3 = font.render(f"正確率: {final_accuracy:.1f}%", True, (255,255,255))
+        stats4 = font.render(f"總分: {total_score}/{TARGET_SCORE}", True, (255,255,255))
 
-        screen.blit(stats1,(380,320))
-        screen.blit(stats2,(380,360))
-        screen.blit(stats3,(380,400))
-        screen.blit(stats4,(380,440))
+        screen.blit(stats1,(450,300))
+        screen.blit(stats2,(450,340))
+        screen.blit(stats3,(450,380))
+        screen.blit(stats4,(450,420))
         
         hint = font.render("Press SPACE to Menu", True, (255,255,255))
-        screen.blit(hint,(350,500))
+        screen.blit(hint,(420,520))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    chatbot_step = 2 # 回到選單前，下次玩直接從步驟2(打過招呼)開始
                     game_state = "menu"
+
+        # 機器人的難過對話框
+        bubble_rect = pygame.Rect(320, 80, 600, 120)
+        pygame.draw.rect(screen, (30, 30, 35), bubble_rect, border_radius=15)
+        pygame.draw.rect(screen, (255, 50, 50), bubble_rect, 3, border_radius=15) # 紅色邊框
+        line1 = font.render(
+            f"別灰心，{player_name}！再接再厲！",
+            True,
+            (255, 255, 255)
+        )
+
+        line2 = font.render(
+            "以下是你的本次成績：",
+            True,
+            (255, 255, 255)
+        )
+
+        screen.blit(line1, (350, 100))
+        screen.blit(line2, (350, 140))
+
+        # 成績板
+        text = big_font.render("GAME OVER", True, (255,50,50))
+        screen.blit(text,(420, 220))
+
+
 
     # ================= result =================
     elif game_state == "result":
-        screen.fill((0, 0, 0))
+        screen.fill((40, 45, 50)) 
         
         # 🌟 修正：讓最後的通關大畫面的過關粒子也能持續更新繪製
         update_particles()
         draw_particles()
 
-        over_text = big_font.render("GAME FINISHED!", True, (255, 80, 80))
-        screen.blit(over_text, (350, 80))
+        # 引導機器人
+        robot_img = pygame.image.load("images/robot_happy.png").convert_alpha()
+        robot_img = pygame.transform.scale(robot_img, (150, 150))
+        screen.blit(robot_img, (100, 150))
+        # 名字標籤
+        name_tag = font.render("小幫手喵喵", True, (0, 235, 200))
+        screen.blit(name_tag, (100, 320))
+        
 
-        result_title = big_font.render("RESULT", True, (255, 255, 0))
-        screen.blit(result_title, (390, 160))
+        # 機器人的恭喜對話框
+        bubble_rect = pygame.Rect(320, 80, 600, 120)
+        pygame.draw.rect(screen, (30, 30, 35), bubble_rect, border_radius=15)
+        pygame.draw.rect(screen, (0, 255, 100), bubble_rect, 3, border_radius=15) # 綠色邊框
+
+        line1 = font.render(f"太棒了，{player_name}！你成功通關了！", True, (255, 255, 255))
+        line2 = font.render("來看看你驚人的表現吧：", True, (255, 255, 255))
+
+        screen.blit(line1, (350, 100))
+        screen.blit(line2, (350, 140))
+
+        over_text = big_font.render("STAGE COMPLETE!", True, (255, 255, 0))
+        screen.blit(over_text, (400, 220))
 
         # 🌟 讀取算好的靜態數據
-        wpm_text = font.render(f"WPM: {final_wpm:.1f}", True, (255, 255, 255))
-        cpm_text = font.render(f"CPM: {final_cpm:.1f}", True, (255, 255, 255))
-        acc_text = font.render(f"Accuracy: {final_accuracy:.1f}%", True, (255, 255, 255))
-        score_text = font.render(f"Total Score: {total_score}", True, (255, 255, 255))
+        wpm_text = font.render(f"每分鐘所打的單字數(WPM): {final_wpm:.1f}", True, (255, 255, 255))
+        cpm_text = font.render(f"每分鐘所打的字元數(CPM): {final_cpm:.1f}", True, (255, 255, 255))
+        acc_text = font.render(f"正確率: {final_accuracy:.1f}%", True, (255, 255, 255))
+        score_text = font.render(f"總分: {total_score}/{TARGET_SCORE}", True, (255, 255, 255))
 
-        screen.blit(wpm_text, (400, 280))
-        screen.blit(cpm_text, (400, 330))
-        screen.blit(acc_text, (400, 380))
-        screen.blit(score_text, (400, 430))
+        screen.blit(wpm_text, (450, 300))
+        screen.blit(cpm_text, (450, 340))
+        screen.blit(acc_text, (450, 380))
+        screen.blit(score_text, (450, 420))
 
         hint = font.render("Press SPACE to return menu", True, (180, 180, 180))
-        screen.blit(hint, (330, 520))
+        screen.blit(hint, (400, 520))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    chatbot_step = 2
                     game_state = "menu"
 
     # ================= FIREWORK =================
@@ -602,3 +746,4 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
+sys.exit()
