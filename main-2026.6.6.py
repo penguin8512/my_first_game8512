@@ -733,15 +733,24 @@ while running:
         sub_rect = sub.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 60))
         screen.blit(sub, sub_rect)
 
-        if elapsed_clear > 2000:
-            score = 0
-            user_text = ""
-            active_hit_animations = [] # 🌟 進入下一關時，把殘留沒播完的特效清空
-            stage_name = stages[min(stage_index, len(stages)-1)]
-            words = load_words(level, stage_name)
-            stage_start_time = pygame.time.get_ticks()
-            new_mole()
-            game_state = "game"
+        next_text = font.render("Press ENTER to continue", True, (255, 255, 255))
+        next_rect = next_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
+        screen.blit(next_text, next_rect)
+
+        # 按下 ENTER 進入下一關
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    score = 0
+                    user_text = ""
+                    active_hit_animations = [] # 進入下一關時，把殘留沒播完的特效清空
+                    stage_name = stages[min(stage_index, len(stages)-1)]
+                    words = load_words(level, stage_name)
+                    stage_start_time = pygame.time.get_ticks()
+                    new_mole()
+                    game_state = "game"
 
     pygame.display.flip()
 
