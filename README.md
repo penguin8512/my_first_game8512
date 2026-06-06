@@ -1,5 +1,5 @@
 
-# my_frist_game
+# my_first_game
 
 ### 資料來源
 - [單字庫](https://drive.google.com/file/d/1SvWyswCK-w4xmR5aOYIPXmBE5eax3KxM/view)
