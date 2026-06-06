@@ -349,7 +349,7 @@ while running:
         elif chatbot_step == 2:
             draw_robot_ui(f"{player_name}，你好呀！很高興認識你！\n接下來，請讓我為你說明一下遊戲規則。\n準備好了就按 Enter 吧！")
         elif chatbot_step == 3:
-            draw_robot_ui("【 遊戲規則說明 】\n1. 地鼠出現時，牠頭上會顯示一個英文單字。\n2. 在時間內正確打出單字並按下 ENTER 敲擊！\n3. 每關有3個小階段，必須達到指定分數才能過關。\n祝你好運！點擊 Enter 進入主畫面！")
+            draw_robot_ui("【 遊戲規則說明 】\n1. 地鼠出現時，牠頭上會顯示一個英文單字。\n2. 在時間內正確打出單字並按下 ENTER 敲擊！\n3. 每關有3個小階段，必須達到指定分數才能過關。\n祝你好運！記得輸入法要切成英文喔！")
 #============================================
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -359,7 +359,7 @@ while running:
                     # 名字輸入階段
                     if event.key == pygame.K_BACKSPACE:
                         user_text = user_text[:-1]
-                    elif event.key == pygame.K_RETURN:
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         if user_text.strip() != "":
                             player_name = user_text.strip()
                         user_text = "" # 清空，留給後面遊戲打字用
@@ -374,7 +374,7 @@ while running:
 #============================================
                 else:
                     # 其他步驟點 Enter 進入下一步
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         chatbot_step += 1
                         if chatbot_step > 3:
                             game_state = "menu" # 對話結束，跳轉至主畫面
@@ -451,7 +451,7 @@ while running:
         texts = [
             "遊戲說明", "這是一個打地鼠遊戲", "當地鼠出現時，打字框會顯示一個英文單字",
             "你需要在地鼠消失前，正確輸入單字並按下ENTER", "每關有三個階段，每個階段需要達到一定分數才能過關",
-            "總共有六關，祝各位好運~", "", "按下ENTER返回選單"
+            "總共有六關，記得輸入法要切成英文喔！","祝各位好運~", "", "按下ENTER返回選單"
         ]
         for i, t in enumerate(texts):
             screen.blit(font.render(t, True, (255, 255, 255)), (150, 150 + i * 50))
@@ -460,7 +460,7 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     game_state = "menu"
 
     # ================= GAME =================
@@ -509,7 +509,7 @@ while running:
                     game_state = "menu"
                 elif event.key == pygame.K_BACKSPACE:
                     user_text = user_text[:-1]
-                elif event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                      
                     if user_text.lower() == current_word["word"].lower():
                         score += 1
@@ -594,7 +594,7 @@ while running:
         stats1 = font.render(f"每分鐘所打的單字數(WPM): {final_wpm:.1f}", True, (255,255,255))
         stats2 = font.render(f"每分鐘所打的字元數(CPM): {final_cpm:.1f}", True, (255,255,255))
         stats3 = font.render(f"正確率: {final_accuracy:.1f}%", True, (255,255,255))
-        stats4 = font.render(f"總分: {total_score}/{TARGET_SCORE}", True, (255,255,255))
+        stats4 = font.render(f"總分: {total_score}", True, (255,255,255))
 
         screen.blit(stats1,(450,300))
         screen.blit(stats2,(450,340))
@@ -672,7 +672,7 @@ while running:
         wpm_text = font.render(f"每分鐘所打的單字數(WPM): {final_wpm:.1f}", True, (255, 255, 255))
         cpm_text = font.render(f"每分鐘所打的字元數(CPM): {final_cpm:.1f}", True, (255, 255, 255))
         acc_text = font.render(f"正確率: {final_accuracy:.1f}%", True, (255, 255, 255))
-        score_text = font.render(f"總分: {total_score}/{TARGET_SCORE}", True, (255, 255, 255))
+        score_text = font.render(f"總分: {total_score}", True, (255, 255, 255))
 
         screen.blit(wpm_text, (450, 300))
         screen.blit(cpm_text, (450, 340))
@@ -742,7 +742,7 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     score = 0
                     user_text = ""
                     active_hit_animations = [] # 進入下一關時，把殘留沒播完的特效清空
