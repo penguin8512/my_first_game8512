@@ -44,7 +44,7 @@ for i in range(8, 0, -1):
     img = pygame.transform.scale(img, (120, 120))
     mole_frames.append(img)
 
-# 🌟 新增：載入 4 張鎚子與 4 張地鼠被打的動畫幀
+#  新增：載入 4 張鎚子與 4 張地鼠被打的動畫幀
 hammer_frames = []
 hit_mole_frames = []
 for i in range(1, 5):
@@ -97,7 +97,7 @@ except:
 # =========================
 # 狀態
 # =========================
-# 🌟 將初始狀態改為 "chatbot"，讓遊戲一打開先進入聊天流程
+#  將初始狀態改為 "chatbot"，讓遊戲一打開先進入聊天流程
 game_state = "chatbot" 
 chatbot_step = 0        # 🌟 控制機器人對話走到哪一步
 player_name = "玩家"     # 🌟 用來儲存玩家輸入的名字
@@ -137,7 +137,7 @@ mole_speed = 0.2
 clear_timer = 0
 particles = []
 
-# 🌟 新增：真正用於計算打字速度的有效遊戲總秒數
+#  新增：真正用於計算打字速度的有效遊戲總秒數
 total_game_time = 0.0
 
 # 最後結算用的暫存數據，避免在結束畫面裡反覆計算導致數字浮動
@@ -145,11 +145,11 @@ final_cpm = 0.0
 final_wpm = 0.0
 final_accuracy = 0.0
 
-# 🌟 新增：用來存放當前畫面上正在播放的敲擊動畫列表
+#  用來存放當前畫面上正在播放的敲擊動畫列表
 active_hit_animations = []
 
 # =========================
-# 🌟 新增：動畫管理類別
+#  動畫管理類別
 # =========================
 class HitAnimation:
     def __init__(self, pos):
