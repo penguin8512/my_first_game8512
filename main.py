@@ -44,7 +44,7 @@ for i in range(8, 0, -1):
     img = pygame.transform.scale(img, (120, 120))
     mole_frames.append(img)
 
-#  新增：載入 4 張鎚子與 4 張地鼠被打的動畫幀
+# 載入 4 張鎚子與 4 張地鼠被打的動畫幀
 hammer_frames = []
 hit_mole_frames = []
 for i in range(1, 5):
@@ -144,7 +144,7 @@ player_name = "玩家"     # 儲存玩家輸入的名字
 
 # 記錄哪一個按鈕被按下去、以及按下的時間點
 pressed_button_name = None   # 記錄主選單哪個被按
-pressed_level_index = None  # 記錄關卡選單哪個被按
+pressed_level_index = None   # 記錄關卡選單哪個被按
 button_flash_timer = 0       # 記錄按下時的時間戳記
 FLASH_DURATION = 150         # 強制有動畫的時間（150 毫秒）
 
@@ -182,7 +182,7 @@ mole_speed = 0.2
 clear_timer = 0
 particles = []
 
-#  新增：真正用於計算打字速度的有效遊戲總秒數
+# 真正用於計算打字速度的有效遊戲總秒數
 total_game_time = 0.0
 
 # 最後結算用的暫存數據，避免在結束畫面裡反覆計算導致數字浮動
@@ -190,7 +190,7 @@ final_cpm = 0.0
 final_wpm = 0.0
 final_accuracy = 0.0
 
-#  用來存放當前畫面上正在播放的敲擊動畫列表
+# 用來存放當前畫面上正在播放的敲擊動畫列表
 active_hit_animations = []
 
 # =========================
@@ -235,7 +235,7 @@ menu_buttons = {
 # 關卡按鈕2*3
 # ==========================================
 level_buttons = []
-btn_w, btn_h = 450, 250  # 圖片尺寸
+btn_w, btn_h = 450, 250 # 圖片尺寸
 hit_w, hit_h = 200, 90  # 判定方格尺寸（對準木頭按鈕本體）
 
 for i in range(6):
@@ -247,11 +247,11 @@ for i in range(6):
     img_y = 120 + row * (btn_h + 20)
     
     # 2. 微調位移
-    if row == 0:    # 第 1、2 關（第 0 列）
-        img_y += 0  # 維持原樣
+    if row == 0:      # 第 1、2 關（第 0 列）
+        img_y += 0    # 維持原樣
     elif row == 1:    # 第 3、4 關（第 1 列）
         img_y -= 80   # 往上移動 80
-    elif row == 2:  # 第 5、6 關（第 2 列）
+    elif row == 2:    # 第 5、6 關（第 2 列）
         img_y -= 160  # 往上移動 160
  
     # 3. 計算判定方格（Rect）的位置，確保它永遠在該列圖片的正中央
@@ -326,7 +326,7 @@ def start_clear():
     game_state = "clear"
     clear_timer = pygame.time.get_ticks()
 
-# 🌟 新增：統一計算打字效率的函式
+# 統一計算打字效率的函式
 def calculate_stats():
     global final_cpm, final_wpm, final_accuracy
     # 確保分母不為 0，改用分鐘制 (秒數 / 60)
@@ -337,7 +337,7 @@ def calculate_stats():
     
     total_words = correct_words + wrong_words
     final_accuracy = (correct_words / max(1, total_words)) * 100
-# 🌟 新增：繪製機器人外觀與對話框的共用函式
+# 繪製機器人外觀與對話框的共用函式
 def draw_robot_ui(bot_text, show_input=False, input_val=""):
     screen.fill((40, 45, 50)) # 深色科技感背景
     
@@ -402,14 +402,14 @@ while running:
     if mole_index >= len(mole_frames):
         mole_index = len(mole_frames) - 1
 
-    # 🌟 新增：在每影格更新並剔除已播完的打地鼠動畫
+    # 在每影格更新並剔除已播完的打地鼠動畫
     for anim in active_hit_animations[:]:
         anim.update(dt)
         if anim.is_finished:
             active_hit_animations.remove(anim)
 
 
-    # ================= 🌟 新增：CHATBOT 機器人互動狀態 =================
+    # ================= CHATBOT 機器人互動狀態 =================
     if game_state == "chatbot":
         if chatbot_step == 0:
             draw_robot_ui("嗨！歡迎來到打字地鼠世界！\n我是你的引導小幫手。\n在開始之前，能告訴我你的名字嗎？")
@@ -434,11 +434,11 @@ while running:
                         user_text = "" # 清空，留給後面遊戲打字用
                         chatbot_step = 2
                     else:
-                        # 🌟 修正：只有當按下的是英文字母或空格時才接收
+                        # 只有當按下的是英文字母或空格時才接收
                         if event.unicode.isalpha() or event.unicode == " ":
-                            # 🌟 修正：限制名字最長12 個字（直接寫數字，免去未定義變數的崩潰）
+                            # 限制名字最長12 個字（直接寫數字，免去未定義變數的崩潰）
                             if len( user_text ) < 12:
-                                user_text += event.unicode # 🌟 修正：將字串加到正確的user_text 變數中
+                                user_text += event.unicode # 將字串加到正確的user_text 變數中
   
 #============================================
                 else:
@@ -503,7 +503,7 @@ while running:
                         if name == "結束遊戲": # 結束遊戲可以立刻退出
                             running = False
 
-  # ================= LEVEL SELECT =================
+    # ================= LEVEL SELECT =================
     elif game_state == "level":
         screen.fill((0, 0, 0))
         title = big_font.render("關卡選擇", True, (255, 255, 255))
@@ -513,7 +513,6 @@ while running:
         mouse_click = pygame.mouse.get_pressed()[0]
         current_time = pygame.time.get_ticks()
 
-        # 🌟 修正重點：必須要有這段事件監聽，否則滑鼠點擊無效且畫面會卡死
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -536,8 +535,8 @@ while running:
             pressed_level_index = None # 重置，非常重要！
 
         # 繪製 6 個大關卡按鈕
-# ==========================================
-        # 🌟 繪製邏輯：大圖片置中蓋在小感應區上
+        # ==========================================
+        # 邏輯：大圖片置中蓋在小感應區上
         # ==========================================
         for i, hit_rect in enumerate(level_buttons):
             # 1. 偵測小感應區 (hit_rect) 是否被碰觸
@@ -548,8 +547,8 @@ while running:
             else:
                 current_lvl_img = lvl_normals[i]
 
-            # 2. 🌟 關鍵：計算大圖片的置中位置
-            # 讓 350x195 的圖片中心，對準 220x100 感應區的中心
+            # 2. 計算大圖片的置中位置
+            # 讓圖片中心對準感應區的中心
             img_render_rect = current_lvl_img.get_rect(center=hit_rect.center)
             
             # 3. 畫出圖片
@@ -559,7 +558,7 @@ while running:
             # 除錯:感應區
             # pygame.draw.rect(screen, (255, 0, 0), hit_rect, 2) 
             # --------------------------------------------------
-     # ================= HOW =================
+    # ================= HOW =================
     elif game_state == "how":
         screen.fill((30, 30, 30))
         texts = [
@@ -599,7 +598,7 @@ while running:
                 try: clear_sound.play()
                 except: pass
                 
-                # 🌟 修正：不管到第幾階段過關，只要過關時間到就應該立刻噴發粒子
+                # 不管到第幾階段過關，只要過關時間到就應該立刻噴發粒子
                 spawn_particles()
 
                 if stage_index < 2:
@@ -607,12 +606,12 @@ while running:
                     game_state = "clear"
                     clear_timer = pygame.time.get_ticks()
                 else:
-                    calculate_stats() # 🌟 破關，先算好分數數據存起來
+                    calculate_stats() # 破關，先算好分數數據存起來
                     game_state = "result"
                     clear_timer = pygame.time.get_ticks()
             # 分數不足
             else:
-                calculate_stats() # 🌟 輸了，先算好分數數據存起來
+                calculate_stats() # 輸了，先算好分數數據存起來
                 game_state = "over"
 
         for event in pygame.event.get():
@@ -631,7 +630,7 @@ while running:
                         correct_words += 1
                         typed_chars += len(user_text)  
                         
-                        # 🌟 新增：打對單字時，在當前地鼠座標建立敲擊動畫物件
+                        # 打對單字時，在當前地鼠座標建立敲擊動畫物件
                         active_hit_animations.append(HitAnimation(current_pos))
 
                         try: hit_sound.play()
@@ -655,7 +654,7 @@ while running:
         draw_holes()
         draw_mole()
 
-        # 🌟 新增：在畫面上印出所有正在播放的打地鼠特效
+        # 在畫面上印出所有正在播放的打地鼠特效
         for anim in active_hit_animations:
             anim.draw()
 
@@ -704,7 +703,7 @@ while running:
         screen.blit(name_tag, (100, 320))
         
 
-        # 🌟 這裡直接讀取剛剛算好的 final_wpm 和 final_cpm，不會再隨著時間遞減了！
+        # 這裡直接讀取剛剛算好的 final_wpm 和 final_cpm，不會再隨著時間遞減了！
         stats1 = font.render(f"每分鐘所打的單字數(WPM): {final_wpm:.1f}", True, (255,255,255))
         stats2 = font.render(f"每分鐘所打的字元數(CPM): {final_cpm:.1f}", True, (255,255,255))
         stats3 = font.render(f"正確率: {final_accuracy:.1f}%", True, (255,255,255))
@@ -749,13 +748,11 @@ while running:
         text = big_font.render("GAME OVER", True, (255,50,50))
         screen.blit(text,(420, 220))
 
-
-
     # ================= result =================
     elif game_state == "result":
         screen.fill((40, 45, 50)) 
         
-        # 🌟 修正：讓最後的通關大畫面的過關粒子也能持續更新繪製
+        # 讓最後的通關大畫面的過關粒子也能持續更新繪製
         update_particles()
         draw_particles()
 
@@ -782,7 +779,7 @@ while running:
         over_text = big_font.render("恭喜通關！", True, (255, 255, 0))
         screen.blit(over_text, (400, 220))
 
-        # 🌟 讀取算好的靜態數據
+        # 讀取算好的靜態數據
         wpm_text = font.render(f"每分鐘所打的單字數(WPM): {final_wpm:.1f}", True, (255, 255, 255))
         cpm_text = font.render(f"每分鐘所打的字元數(CPM): {final_cpm:.1f}", True, (255, 255, 255))
         acc_text = font.render(f"正確率: {final_accuracy:.1f}%", True, (255, 255, 255))
@@ -821,7 +818,7 @@ while running:
                 stage_index = 0
                 score = 0
                 user_text = ""
-                active_hit_animations = [] # 🌟 重置動畫
+                active_hit_animations = [] # 重置動畫
                 words = load_words(level,"first")
                 stage_start_time = pygame.time.get_ticks()
                 new_mole()
