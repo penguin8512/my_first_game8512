@@ -15,7 +15,7 @@
 - WPM / CPM / 正確率統計
 - 背景音樂與音效
 - 多關卡與階段系統
-- 可透過 GitHub Pages 網頁遊玩
+<!-- - 可透過 GitHub Pages 網頁遊玩 -->
 - 使用7000單字作為題庫
 
 ---
@@ -38,7 +38,7 @@ python main.py
 
 ---
 
-### 網頁版（GitHub Pages）
+<!-- ### 網頁版（GitHub Pages）
 
 直接開啟：
 
@@ -48,7 +48,7 @@ https://你的帳號.github.io/你的repo/
 
 （部署完成後即可使用）
 
----
+--- -->
 
 ## 遊戲規則
 
@@ -86,6 +86,7 @@ https://你的帳號.github.io/你的repo/
   * WPM（每分鐘單字數）
   * CPM（每分鐘字元數）
   * Accuracy（正確率）
+* 每關累積 10 分過關
 
 ---
 
@@ -103,7 +104,7 @@ https://你的帳號.github.io/你的repo/
 * 開場 AI 機器人引導
 * 玩家輸入名字
 * 教學模式
-* 結果鼓勵/安慰對話
+* 根據結果鼓勵、安慰玩家
 
 ---
 
@@ -137,8 +138,8 @@ project/
 * Python 3
 * Pygame
 * CSV 資料讀取
-* GitHub Pages（網頁部署）
-* pygbag（Pygame Web 轉換）
+<!-- * GitHub Pages（網頁部署）
+* pygbag（Pygame Web 轉換） -->
 
 ---
 
@@ -146,6 +147,7 @@ project/
 
 *  加入排行榜系統
 *  多人競速模式
+*  製作網頁版
 
 ---
 
@@ -155,6 +157,8 @@ project/
 - [音效-hit](https://youtu.be/SpWW74WrmZg?si=mj84YmBExHNUdy6f)
 - [音效-clear](https://youtu.be/5-gG-59gQpU?si=zqGCrudRCWGzK4yA)
 - [音樂-bgm](https://youtu.be/XpIpJ64QDSc?si=_FjwlF_fKcgM-4pb)
+
+###### 在本專題開發過程中，使用 AI 工具協助學習與開發，提升程式完成效率與除錯能力。(協作AI：ChatGPT、Gemini)
 
 
 
