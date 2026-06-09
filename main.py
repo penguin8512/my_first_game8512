@@ -3,7 +3,6 @@ import random
 import csv
 import sys
 
-
 pygame.init()
 pygame.mixer.init()
 
@@ -84,17 +83,17 @@ big_font = pygame.font.Font(None, 60)
 # ==========================================
 try:
     # 【主選單按鈕圖片】
-    btn1_normal  = pygame.transform.scale(pygame.image.load("images/button/btn1-1.png").convert_alpha(), (400, 200))
-    btn1_hover   = pygame.transform.scale(pygame.image.load("images/button/btn1-2.png").convert_alpha(), (400, 200))
-    btn1_pressed = pygame.transform.scale(pygame.image.load("images/button/btn1-3.png").convert_alpha(), (400, 200))
+    btn1_normal  = pygame.transform.scale(pygame.image.load("images/button/btn1-1.png").convert_alpha(), (600, 300))
+    btn1_hover   = pygame.transform.scale(pygame.image.load("images/button/btn1-2.png").convert_alpha(), (600, 300))
+    btn1_pressed = pygame.transform.scale(pygame.image.load("images/button/btn1-3.png").convert_alpha(), (600, 300))
     
-    btn2_normal  = pygame.transform.scale(pygame.image.load("images/button/btn2-1.png").convert_alpha(), (400, 200))
-    btn2_hover   = pygame.transform.scale(pygame.image.load("images/button/btn2-2.png").convert_alpha(), (400, 200))
-    btn2_pressed = pygame.transform.scale(pygame.image.load("images/button/btn2-3.png").convert_alpha(), (400, 200))
+    btn2_normal  = pygame.transform.scale(pygame.image.load("images/button/btn2-1.png").convert_alpha(), (600, 300))
+    btn2_hover   = pygame.transform.scale(pygame.image.load("images/button/btn2-2.png").convert_alpha(), (600, 300))
+    btn2_pressed = pygame.transform.scale(pygame.image.load("images/button/btn2-3.png").convert_alpha(), (600, 300))
     
-    btn3_normal  = pygame.transform.scale(pygame.image.load("images/button/btn3-1.png").convert_alpha(), (400, 200))
-    btn3_hover   = pygame.transform.scale(pygame.image.load("images/button/btn3-2.png").convert_alpha(), (400, 200))
-    btn3_pressed = pygame.transform.scale(pygame.image.load("images/button/btn3-3.png").convert_alpha(), (400, 200))
+    btn3_normal  = pygame.transform.scale(pygame.image.load("images/button/btn3-1.png").convert_alpha(), (600, 300))
+    btn3_hover   = pygame.transform.scale(pygame.image.load("images/button/btn3-2.png").convert_alpha(), (600, 300))
+    btn3_pressed = pygame.transform.scale(pygame.image.load("images/button/btn3-3.png").convert_alpha(), (600, 300))
 
     # 三個列表，分別存放6個關卡的常態、懸停、按壓圖片
     lvl_normals = []
@@ -113,7 +112,7 @@ try:
 except Exception as e:
     print(f"按鈕圖片載入失敗，將使用純色代替。錯誤原因: {e}")
     # 防禦機制：萬一沒圖片，就建立替代畫布
-    btn1_normal = btn1_hover = btn1_pressed = pygame.Surface((400, 200))
+    btn1_normal = btn1_hover = btn1_pressed = pygame.Surface((500, 250))
     lvl_normals = [pygame.Surface((450, 250)) for _ in range(6)]
     lvl_hovers = [pygame.Surface((450, 250)) for _ in range(6)]
     lvl_presseds = [pygame.Surface((450, 250)) for _ in range(6)]
@@ -157,7 +156,7 @@ correct_words = 0
 wrong_words = 0
 score = 0
 total_score = 0
-TARGET_SCORE = 5
+TARGET_SCORE = 10 #通關分數
 
 MAX_NAME_LEN = 12
 input_val = ""  
@@ -227,8 +226,8 @@ class HitAnimation:
 # =========================
 menu_buttons = {
     "開始遊戲": pygame.Rect(350, 250, 300, 60),
-    "遊戲說明": pygame.Rect(350, 350, 300, 60),
-    "結束遊戲": pygame.Rect(350, 450, 300, 60)
+    "遊戲說明": pygame.Rect(350, 400, 300, 60),
+    "結束遊戲": pygame.Rect(350, 550, 300, 60)
 }
 
 # ==========================================
@@ -236,14 +235,14 @@ menu_buttons = {
 # ==========================================
 level_buttons = []
 btn_w, btn_h = 450, 250 # 圖片尺寸
-hit_w, hit_h = 200, 90  # 判定方格尺寸（對準木頭按鈕本體）
+hit_w, hit_h = 200, 90  # 判定方格尺寸
 
 for i in range(6):
     col = i % 2   # 第幾欄 (0, 1)
     row = i // 2  # 第幾列 (0, 1, 2)
     
     # 1. 基礎 X, Y 座標計算
-    img_x = 110 + col * (btn_w + 80)
+    img_x = 110 + col * (btn_w + 0)
     img_y = 120 + row * (btn_h + 20)
     
     # 2. 微調位移
@@ -264,25 +263,42 @@ for i in range(6):
 # 工具
 # =========================
 def new_mole():
-    global current_word, current_pos, mole_index, mole_timer
-    
-    # 1. 隨機挑選新單字
+    global current_word, current_pos, mole_index, mole_timer, CURRENT_MOLE_DURATION
+     #記住這隻地鼠原本的位置
+    old_pos = current_pos if 'current_pos' in globals() else None
+    # 1. 隨機選一個洞和單字
+    current_pos = random.choice(mole_positions)
     if words: 
         current_word = random.choice(words)
+    else:
+        current_word = {"word": "test", "chinese": "測試"}
         
-    # 2. 記住這隻地鼠原本（舊）的位置
-    old_pos = current_pos
-    
-    # 3. 使用迴圈：如果抽到一樣的洞，就強制重新抽，直到抽到不同的洞為止
+    # 3. 迴圈：如果抽到一樣的洞，就強制重新抽，直到抽到不同的洞為止
     while True:
         next_pos = random.choice(mole_positions)
         if next_pos != old_pos:
             current_pos = next_pos
             break # 抽到不同的洞了，跳出迴圈
             
-    # 4. 重置動畫幀與時間
+    # 4. 重置動畫幀與時間計時器
     mole_index = 0
     mole_timer = pygame.time.get_ticks()
+
+    try:
+        current_lvl = level
+    except NameError:
+        current_lvl = 1 # 保險機制
+
+    # 5. 根據關卡決定這隻新地鼠的隨機壽命
+    if current_lvl == 1:     min_s, max_s = 7.0, 7.0
+    elif current_lvl == 2:   min_s, max_s = 6.0, 7.0
+    elif current_lvl == 3:   min_s, max_s = 5.0, 7.0
+    elif current_lvl == 4:   min_s, max_s = 4.0, 6.0
+    elif current_lvl == 5:   min_s, max_s = 3.0, 6.0
+    else:                    min_s, max_s = 3.0, 5.0
+
+    # 抽一個隨機秒數並轉成毫秒
+    CURRENT_MOLE_DURATION = random.uniform(min_s, max_s) * 1000
 
 def draw_mole():
     x, y = current_pos
@@ -397,7 +413,7 @@ running = True
 while running:
     # 取得每影格實際經過的毫秒數，並換算成秒
     dt = clock.tick(60) / 1000.0  
-
+    current_time = pygame.time.get_ticks()
     mole_index += mole_speed
     if mole_index >= len(mole_frames):
         mole_index = len(mole_frames) - 1
@@ -525,7 +541,7 @@ while running:
         # 延遲切換進入遊戲關卡
         if pressed_level_index is not None and (current_time - button_flash_timer >= FLASH_DURATION):
             level = pressed_level_index + 1
-            # 重置所有遊戲數值 (你原本的邏輯)
+            # 重置所有遊戲數值
             stage_index = 0; score = 0; total_score = 0; user_text = ""; typed_chars = 0
             correct_words = 0; wrong_words = 0; total_game_time = 0.0; active_hit_animations = []
             stage_start_time = pygame.time.get_ticks(); mole_timer = pygame.time.get_ticks()
@@ -582,11 +598,12 @@ while running:
         # 只有在真正的遊戲關卡狀態下，才累加有效打字時間
         total_game_time += dt
 
-        elapsed = (pygame.time.get_ticks() - stage_start_time) / 1000
-        current_time = pygame.time.get_ticks()
+        elapsed = (current_time - stage_start_time) / 1000
 
-        if current_time - mole_timer >= MOLE_DURATION:
+        # 時間到，換下一隻地鼠
+        if current_time - mole_timer >= CURRENT_MOLE_DURATION:
             new_mole()
+            
 
         # =====================
         # 時間到 (60秒一關)
@@ -625,8 +642,8 @@ while running:
                 elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                      
                     if user_text.lower() == current_word["word"].lower():
-                        score += 1
-                        total_score += 1
+                        score += 2
+                        total_score += 2
                         correct_words += 1
                         typed_chars += len(user_text)  
                         
@@ -636,6 +653,8 @@ while running:
                         try: hit_sound.play()
                         except: pass
                     else:
+                        score -= 1
+                        total_score -= 1
                         wrong_words += 1
                         try: wrong_sound.play()
                         except: pass
@@ -659,7 +678,7 @@ while running:
             anim.draw()
 
         # ==========================================
-        #  新增：繪製動態輸入框 (Input Box)
+        # 動態輸入框
         # ==========================================
         # 設定輸入框的尺寸與位置 (X, Y, 寬, 高)
         box_width = 500
