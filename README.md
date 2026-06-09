@@ -37,6 +37,18 @@ python main.py
 
 
 ---
+### Windows 免安裝版本
+如果你不想安裝 Python，可以直接從 GitHub 下載 ZIP 檔：
+
+1. 點選「Code」→「Download ZIP」
+2. 解壓縮檔案
+3. 進入資料夾
+4. 雙擊執行 `main.exe`
+
+即可開始遊玩
+
+⚠️ 請確保 `images / music / words.csv` 與 `main.exe` 在同一資料夾
+
 
 <!-- ### 網頁版（GitHub Pages）
 
@@ -114,6 +126,7 @@ https://你的帳號.github.io/你的repo/
 project/
 │── main.py
 │── words.csv
+│── main.exe
 │
 ├── images/
 │   ├── mice1.png ~ mice8.png
@@ -137,6 +150,7 @@ project/
 
 * Python 3
 * Pygame
+* auto-py-to-exe (圖形化打包工具，用於將遊戲編譯為 Windows 獨立的 `.exe` 執行檔)
 * CSV 資料讀取
 <!-- * GitHub Pages（網頁部署）
 * pygbag（Pygame Web 轉換） -->
