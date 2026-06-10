@@ -434,7 +434,7 @@ while running:
         elif chatbot_step == 2:
             draw_robot_ui(f"{player_name}，你好呀！很高興認識你！\n接下來，請讓我為你說明一下遊戲規則。\n準備好了就按 Enter 吧！")
         elif chatbot_step == 3:
-            draw_robot_ui("【 遊戲規則說明 】\n1. 地鼠出現時，牠頭上會顯示一個英文單字。\n2. 在時間內正確打出單字並按下 ENTER 敲擊！\n3. 每關有3個小階段，必須達到5分才能過關喔。\n祝你好運！記得輸入法要切成英文喔！")
+            draw_robot_ui("【 遊戲規則說明 】\n1. 地鼠出現時，牠頭上會顯示一個英文單字。\n2. 在時間內正確打出單字並按下 ENTER 敲擊！\n3. 每關有3個小階段，必須達到10分才能過關喔。\n祝你好運！記得輸入法要切成英文喔！")
 #============================================
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
