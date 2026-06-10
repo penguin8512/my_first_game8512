@@ -273,14 +273,14 @@ def new_mole():
     else:
         current_word = {"word": "test", "chinese": "測試"}
         
-    # 3. 迴圈：如果抽到一樣的洞，就強制重新抽，直到抽到不同的洞為止
+    # 2. 如果抽到一樣的洞，就強制重新抽，直到抽到不同的洞為止
     while True:
         next_pos = random.choice(mole_positions)
         if next_pos != old_pos:
             current_pos = next_pos
             break # 抽到不同的洞了，跳出迴圈
             
-    # 4. 重置動畫幀與時間計時器
+    # 3. 重置動畫幀與時間計時器
     mole_index = 0
     mole_timer = pygame.time.get_ticks()
 
@@ -289,7 +289,7 @@ def new_mole():
     except NameError:
         current_lvl = 1 # 保險機制
 
-    # 5. 根據關卡決定這隻新地鼠的隨機壽命
+    # 4. 根據關卡決定這隻新地鼠的隨機壽命
     if current_lvl == 1:     min_s, max_s = 7.0, 7.0
     elif current_lvl == 2:   min_s, max_s = 6.0, 7.0
     elif current_lvl == 3:   min_s, max_s = 5.0, 7.0
