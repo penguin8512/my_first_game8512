@@ -15,9 +15,8 @@
 - WPM / CPM / 正確率統計
 - 背景音樂與音效
 - 多關卡與階段系統
-<!-- - 可透過 GitHub Pages 網頁遊玩 -->
 - 使用7000單字作為題庫
-
+<!-- - 可透過 GitHub Pages 網頁遊玩 -->
 ---
 
 ## 遊玩方式
@@ -38,7 +37,7 @@ python main.py
 
 ---
 ### Windows 免安裝版本
-如果你不想安裝 Python，可以直接從 GitHub 下載 ZIP 檔：
+如果不想安裝 Python，可以直接從 GitHub 下載 ZIP 檔：
 
 1. 點選「Code」→「Download ZIP」
 2. 解壓縮檔案

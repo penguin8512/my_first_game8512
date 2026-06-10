@@ -519,7 +519,7 @@ while running:
                         if name == "結束遊戲": # 結束遊戲可以立刻退出
                             running = False
 
-    # ================= LEVEL SELECT =================
+    # ================= 選擇關卡 =================
     elif game_state == "level":
         screen.fill((0, 0, 0))
         title = big_font.render("關卡選擇", True, (255, 255, 255))
@@ -579,7 +579,7 @@ while running:
         screen.fill((30, 30, 30))
         texts = [
             "遊戲說明", "這是一個打地鼠遊戲", "當地鼠出現時，打字框會顯示一個英文單字",
-            "你需要在地鼠消失前，正確輸入單字並按下ENTER", "每關有三個階段，每個階段需要達到五分才能過關",
+            "你需要在地鼠消失前，正確輸入單字並按下ENTER", "每關有三個階段，每個階段需要達到十分才能過關",
             "總共有六關，記得輸入法要切成英文喔！","祝各位好運~", "", "按下ENTER返回選單"
         ]
         for i, t in enumerate(texts):
@@ -821,28 +821,28 @@ while running:
                     game_state = "menu"
 
     # ================= FIREWORK =================
-    elif game_state == "firework":
-        screen.fill((0,0,0))
-        update_particles()
-        draw_particles()
+    # elif game_state == "firework":
+    #     screen.fill((0,0,0))
+    #     update_particles()
+    #     draw_particles()
 
-        title = big_font.render("關卡完成！", True, (255,255,0))
-        screen.blit(title,(220,150))
+    #     title = big_font.render("關卡完成！", True, (255,255,0))
+    #     screen.blit(title,(220,150))
 
-        if pygame.time.get_ticks() - clear_timer > 3000:
-            level += 1
-            if level > 6:
-                game_state = "menu"
-            else:
-                stage_index = 0
-                score = 0
-                user_text = ""
-                active_hit_animations = [] # 重置動畫
-                words = load_words(level,"first")
-                stage_start_time = pygame.time.get_ticks()
-                new_mole()
-                game_state = "game"
-
+    #     if pygame.time.get_ticks() - clear_timer > 3000:
+    #         level += 1
+    #         if level > 6:
+    #             game_state = "menu"
+    #         else:
+    #             stage_index = 0
+    #             score = 0
+    #             user_text = ""
+    #             active_hit_animations = [] # 重置動畫
+    #             words = load_words(level,"first")
+    #             stage_start_time = pygame.time.get_ticks()
+    #             new_mole()
+    #             game_state = "game"
+    
     # ================= CLEAR =================
     elif game_state == "clear":
         screen.fill((0, 0, 0))
