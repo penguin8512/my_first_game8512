@@ -875,6 +875,45 @@ while running:
         text = big_font.render("GAME OVER", True, (255, 50, 50))
         screen.blit(text, (420, 220))
 
+    # ================= CLEAR =================
+    elif game_state == "clear":
+        screen.fill((0, 0, 0))
+        update_particles()
+        draw_particles()
+
+        elapsed_clear = pygame.time.get_ticks() - clear_timer
+        flash = (pygame.time.get_ticks() // 200) % 2
+        color = (255, 255, 0) if flash else (255, 180, 0)
+
+        scale = min(1.8, 0.5 + elapsed_clear / 500)
+        clear_font = pygame.font.Font("fonts/msjh.ttf", int(80 * scale))
+        text = clear_font.render("過關！", True, color)
+        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        screen.blit(text, text_rect)
+
+        sub = font.render("準備好迎接下一關了嗎？", True, (255, 255, 255))
+        sub_rect = sub.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 60))
+        screen.blit(sub, sub_rect)
+
+        next_text = font.render("按 ENTER 繼續", True, (255, 255, 255))
+        next_rect = next_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
+        screen.blit(next_text, next_rect)
+
+        # 按下 ENTER 進入下一關
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                    score = 0
+                    user_text = ""
+                    active_hit_animations = []  # 進入下一關時，把殘留沒播完的特效清空
+                    stage_name = stages[min(stage_index, len(stages) - 1)]
+                    words = load_words(level, stage_name)
+                    stage_start_time = pygame.time.get_ticks()
+                    new_mole()
+                    game_state = "game"
+
     # ================= result =================
     elif game_state == "result":
         screen.fill((40, 45, 50))
@@ -957,45 +996,6 @@ while running:
     #             stage_start_time = pygame.time.get_ticks()
     #             new_mole()
     #             game_state = "game"
-
-    # ================= CLEAR =================
-    elif game_state == "clear":
-        screen.fill((0, 0, 0))
-        update_particles()
-        draw_particles()
-
-        elapsed_clear = pygame.time.get_ticks() - clear_timer
-        flash = (pygame.time.get_ticks() // 200) % 2
-        color = (255, 255, 0) if flash else (255, 180, 0)
-
-        scale = min(1.8, 0.5 + elapsed_clear / 500)
-        clear_font = pygame.font.Font("fonts/msjh.ttf", int(80 * scale))
-        text = clear_font.render("過關！", True, color)
-        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
-        screen.blit(text, text_rect)
-
-        sub = font.render("準備好迎接下一關了嗎？", True, (255, 255, 255))
-        sub_rect = sub.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 60))
-        screen.blit(sub, sub_rect)
-
-        next_text = font.render("按 ENTER 繼續", True, (255, 255, 255))
-        next_rect = next_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 120))
-        screen.blit(next_text, next_rect)
-
-        # 按下 ENTER 進入下一關
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                    score = 0
-                    user_text = ""
-                    active_hit_animations = []  # 進入下一關時，把殘留沒播完的特效清空
-                    stage_name = stages[min(stage_index, len(stages) - 1)]
-                    words = load_words(level, stage_name)
-                    stage_start_time = pygame.time.get_ticks()
-                    new_mole()
-                    game_state = "game"
 
     pygame.display.flip()
 
