@@ -403,13 +403,13 @@ def calculate_stats():
     minutes = max(total_game_time / 60.0, 0.01)
 
     final_cpm = typed_chars / minutes
-    final_wpm = final_cpm / 5.0  # 傳統 WPM 定義為 CPM / 5
+    final_wpm = correct_words / minutes
 
     total_words = correct_words + wrong_words
     final_accuracy = (correct_words / max(1, total_words)) * 100
 
 
-# 繪製機器人外觀與對話框的共用函式
+# 繪製機器人外觀與對話框
 def draw_robot_ui(bot_text, show_input=False, input_val=""):
     screen.fill((40, 45, 50))  # 深色科技感背景
 
