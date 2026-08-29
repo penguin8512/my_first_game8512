@@ -139,8 +139,8 @@ project/
 │   ├── wrong.wav
 │   └── clear.wav
 │
-├── fonts/
-│   └── msjh.ttf
+└── fonts/
+    └── msjh.ttf
 ```
 
 ---
